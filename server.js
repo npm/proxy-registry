@@ -13,8 +13,8 @@ const conf = require('./config.js')
 const registry = conf.npm.registry.replace(/[/]$/, '')
 
 const matchName = qr`(?:@[^/+]/)?[^/]+`
-const matchVersion = qr`\d+[.]\d+[.]\d+(?:-.*)?`
-const matchTarball = qr`^/(${matchName})/-/.*?-(${matchVersion})[.]tgz$`
+const matchVersion = qr`\d+\.\d+\.\d+(?:-.*)?`
+const matchTarball = qr`^/(${matchName})/-/.*?-(${matchVersion})\.tgz$`
 const matchManifest = qr`^/(${matchName})$`
 
 async function handleRequest (ctx, next) {
@@ -27,7 +27,7 @@ async function handleRequest (ctx, next) {
   } else if (matchManifest.test(ctx.request.url)) {
     await fetchManifest(ctx, requestConfig)
   } else {
-    const result = await proxyRequest(ctx, requestConfig)
+    const result = await proxyRequest(ctx.request.url, ctx, requestConfig)
     ctx.response.body = result.body
   }
   await next()
@@ -39,15 +39,20 @@ function fetchTarball (ctx, requestConfig) {
 }
 
 async function fetchManifest (ctx, requestConfig) {
-  const result = await proxyRequest(ctx, requestConfig)
-  const body = await result.buffer()
-  ctx.response.body = body.toString().replace(qr.g`${registry}`, `http://localhost:22000`)
+  const [, name] = matchManifest.exec(ctx.request.url)
+  const result = await proxyRequest(`/${name}`, ctx, requestConfig)
+  const body = JSON.parse(await result.buffer())
+  for (let version of Object.keys(body.versions)) {
+    let vv = body.versions[version]
+    vv.dist.tarball = vv.dist.tarball.replace(qr.g`${registry}`, `http://localhost:22000`)
+  }
+  ctx.response.body = JSON.stringify(body)
 }
 
-async function proxyRequest (ctx, requestConfig) {
+async function proxyRequest (url, ctx, requestConfig) {
   if (requestConfig.method === 'PUT' || requestConfig.method === 'POST') requestConfig.body = ctx.req
 
-  const result = await fetch(`${registry}${ctx.request.url}`, requestConfig)
+  const result = await fetch(`${registry}${url}`, requestConfig)
   for (let header of result.headers.entries()) {
     const [key, value] = header
     if (key === 'transfer-encoding' || key === 'content-encoding' || key === 'content-length' || key === 'connection') continue
