@@ -29,6 +29,7 @@ const alwaysJson = require('./always-json.js')
 
 const conf = require('./config.js')
 
+const shadow = '@iarna'
 const registry = conf.npm.registry.replace(/[/]$/, '')
 
 const matchName = qr`(?:@[^/+]/)?[^/]+`
@@ -91,11 +92,20 @@ function fetchTarball (ctx, requestConfig) {
 }
 
 async function fetchManifest (ctx, requestConfig) {
-  const [, name] = matchManifest.exec(ctx.request.url)
-  const result = await proxyRequest(`/${name}`, ctx, requestConfig)
+  let [, name] = matchManifest.exec(ctx.request.url)
+  let shadowName = shadow + '/' + name.replace(/^@([^/]+)/, '$1-')
+  let result = await proxyRequest(`/${shadowName}`, ctx, requestConfig)
+  if (result.status === 404) {
+    shadowName = null
+    result = await proxyRequest(`/${name}`, ctx, requestConfig)
+  }
   const body = JSON.parse(await result.buffer())
+  if (shadowName) {
+    body.name = name
+  }
   for (let version of Object.keys(body.versions)) {
     let vv = body.versions[version]
+    if (shadowName) vv.name = name
     vv.dist.tarball = vv.dist.tarball.replace(qr.g`${registry}`, `http://localhost:22000`)
   }
   ctx.response.body = JSON.stringify(body)
