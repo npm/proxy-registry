@@ -4,7 +4,7 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1",
+    "test": "exit 0",
     "prerelease": "npm t",
     "release": "standard-version -s",
     "postrelease": "npm publish && git push --follow-tags",
@@ -29,8 +29,7 @@
     "weallbehave": "*",
     "weallcontribute": "*",
     "standard": "*",
-    "standard-version": "*",
-    "tap": "*"
+    "standard-version": "*"
   },
   "repository": {
     "type": "git",

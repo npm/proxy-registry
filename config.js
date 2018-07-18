@@ -1,4 +1,6 @@
+'use strict'
 const qx = require('@perl/qx')
+const url = require('url')
 
 const conf = exports.npm = JSON.parse(qx.sync`npm config ls -l --json`)
 exports.pacote = {

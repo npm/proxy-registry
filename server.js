@@ -18,7 +18,6 @@ const matchTarball = qr`^/(${matchName})/-/.*?-(${matchVersion})[.]tgz$`
 const matchManifest = qr`^/(${matchName})$`
 
 async function handleRequest (ctx, next) {
-console.log('starting')
   const requestConfig = Object.assign({}, conf.pacote, {headers: ctx.request.header})
   delete requestConfig.headers.host
   requestConfig.method = ctx.request.method
@@ -31,16 +30,12 @@ console.log('starting')
     const result = await proxyRequest(ctx, requestConfig)
     ctx.response.body = result.body
   }
-  console.log('waiting for next')
   await next()
-  console.log('all done')
-  return
 }
 
 function fetchTarball (ctx, requestConfig) {
   const [, name, version] = matchTarball.exec(ctx.request.url)
   ctx.response.body = pacote.tarball.stream(`${name}@${version}`, requestConfig)
-  return
 }
 
 async function fetchManifest (ctx, requestConfig) {
@@ -52,7 +47,6 @@ async function fetchManifest (ctx, requestConfig) {
 async function proxyRequest (ctx, requestConfig) {
   if (requestConfig.method === 'PUT' || requestConfig.method === 'POST') requestConfig.body = ctx.req
 
-console.log('    PROXYING TO', `${registry}${ctx.request.url}`, !!requestConfig.body)
   const result = await fetch(`${registry}${ctx.request.url}`, requestConfig)
   for (let header of result.headers.entries()) {
     const [key, value] = header
@@ -63,12 +57,10 @@ console.log('    PROXYING TO', `${registry}${ctx.request.url}`, !!requestConfig.
   return result
 }
 
-
 const app = new Koa()
 app.use(logger())
 app.use(alwaysJson())
 app.use(compress())
 app.use(handleRequest)
-console.log("Listening")
+console.log('Listening on', 22000)
 app.listen(22000)
-
