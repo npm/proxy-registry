@@ -1,0 +1,41 @@
+{
+  "name": "proxy-registry",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "prerelease": "npm t",
+    "release": "standard-version -s",
+    "postrelease": "npm publish && git push --follow-tags",
+    "pretest": "standard",
+    "update-coc": "weallbehave -o . && git add CODE_OF_CONDUCT.md && git commit -m 'docs(coc): updated CODE_OF_CONDUCT.md'",
+    "update-contrib": "weallcontribute -o . && git add CONTRIBUTING.md && git commit -m 'docs(contributing): updated CONTRIBUTING.md'"
+  },
+  "keywords": [],
+  "author": "Rebecca Turner <me@re-becca.org> (http://re-becca.org/)",
+  "license": "ISC",
+  "dependencies": {
+    "@perl/qr": "^1.2.0",
+    "@perl/qx": "^1.0.2",
+    "koa": "^2.5.2",
+    "koa-compress": "^3.0.0",
+    "koa-json-error": "^3.1.2",
+    "koa-logger": "^3.2.0",
+    "make-fetch-happen": "^4.0.1",
+    "pacote": "^8.1.6"
+  },
+  "devDependencies": {
+    "weallbehave": "*",
+    "weallcontribute": "*",
+    "standard": "*",
+    "standard-version": "*",
+    "tap": "*"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/npm/proxy-registry.git"
+  },
+  "bugs": "https://github.com/npm/proxy-registry/issues",
+  "homepage": "https://npmjs.com/package/proxy-registry"
+}
