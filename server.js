@@ -20,7 +20,7 @@ const spawn = require('child_process').spawn
 const pacote = require('pacote')
 const fetch = require('make-fetch-happen')
 const qr = require('@perl/qr')
-const http = require('http');
+const http = require('http')
 
 const Koa = require('koa')
 const compress = require('koa-compress')
@@ -36,10 +36,6 @@ const matchVersion = qr`\d+\.\d+\.\d+(?:-.*)?`
 const matchTarball = qr`^/(${matchName})/-/.*?-(${matchVersion})\.tgz$`
 const matchManifest = qr`^/(${matchName})$`
 
-const isWindows = process.platform === 'win32'
-const isWindowsBash = (/^MINGW(32|64)$/.test(process.env.MSYSTEM) || process.env.TERM === 'cygwin')
-const isWindowsShell = isWindows && !isWindowsBash
-
 async function main (opts, ...args) {
   if (opts.log == null) opts.log = !opts.shell
   const app = new Koa()
@@ -47,7 +43,7 @@ async function main (opts, ...args) {
   app.use(alwaysJson())
   app.use(compress())
   app.use(handleRequest)
-  const srv = http.createServer(app.callback()).listen(opts.port);
+  const srv = http.createServer(app.callback()).listen(opts.port)
 
   await new Promise((resolve, reject) => {
     app.on('error', reject)
@@ -113,4 +109,3 @@ async function proxyRequest (url, ctx, requestConfig) {
   ctx.response.status = result.status
   return result
 }
-
