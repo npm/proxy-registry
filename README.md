@@ -3,7 +3,7 @@
 This is a simple proxy registry that uses your existing npm cache.
 
 ```console
-$ npx iarna/proxy-registry
+$ npx proxy-registry
 Listening on: https://localhost:22000
 To use: npm config set registry https://localhost:22000
 ^C to close server
