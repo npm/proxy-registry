@@ -35,6 +35,18 @@
     "standard": "*",
     "standard-version": "*"
   },
+  "bundleDependencies": [
+    "@iarna/cli",
+    "@perl/qr",
+    "@perl/qx",
+    "koa",
+    "koa-compress",
+    "koa-json-error",
+    "koa-logger",
+    "make-fetch-happen",
+    "pacote",
+    "yargs"
+  ],
   "repository": {
     "type": "git",
     "url": "https://github.com/npm/proxy-registry.git"
