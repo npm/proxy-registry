@@ -21,12 +21,17 @@
     "@iarna/cli": "^2.0.2",
     "@perl/qr": "^1.2.0",
     "@perl/qx": "^1.0.2",
+    "cacache": "^11.1.0",
+    "funstream": "^3.0.0",
     "koa": "^2.5.2",
     "koa-compress": "^3.0.0",
     "koa-json-error": "^3.1.2",
     "koa-logger": "^3.2.0",
     "make-fetch-happen": "^4.0.1",
+    "markdown-it": "^8.4.2",
     "pacote": "^9.0.0",
+    "ssri": "^6.0.0",
+    "tar": "^4.4.6",
     "yargs": "^12.0.1"
   },
   "devDependencies": {
@@ -45,7 +50,12 @@
     "koa-logger",
     "make-fetch-happen",
     "pacote",
-    "yargs"
+    "yargs",
+    "cacache",
+    "funstream",
+    "ssri",
+    "tar",
+    "markdown-it"
   ],
   "repository": {
     "type": "git",
