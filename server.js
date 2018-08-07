@@ -26,6 +26,7 @@ const Koa = require('koa')
 const compress = require('koa-compress')
 const logger = require('koa-logger')
 const alwaysJson = require('./always-json.js')
+const fetchPackument = require('./fetch-packument.js')
 
 const conf = require('./config.js')
 
@@ -70,13 +71,19 @@ async function handleRequest (ctx, next) {
   delete requestConfig.headers.host
   requestConfig.method = ctx.request.method
 
-  if (matchTarball.test(ctx.request.url)) {
-    await fetchTarball(ctx, requestConfig)
-  } else if (matchManifest.test(ctx.request.url)) {
-    await fetchManifest(ctx, requestConfig)
-  } else {
-    const result = await proxyRequest(ctx.request.url, ctx, requestConfig)
-    ctx.response.body = result.body
+  try {
+    if (matchTarball.test(ctx.request.url)) {
+      await fetchTarball(ctx, requestConfig)
+    } else if (matchManifest.test(ctx.request.url)) {
+      await fetchManifest(ctx, requestConfig)
+    } else {
+      const result = await proxyRequest(ctx.request.url, ctx, requestConfig)
+      ctx.response.body = result.body
+    }
+  } catch (ex) {
+    console.error(ex)
+    ctx.response.status = 404
+    ctx.response.body = JSON.stringify(ex)
   }
   await next()
 }
@@ -88,8 +95,7 @@ function fetchTarball (ctx, requestConfig) {
 
 async function fetchManifest (ctx, requestConfig) {
   const [, name] = matchManifest.exec(ctx.request.url)
-  const result = await proxyRequest(`/${name}`, ctx, requestConfig)
-  const body = JSON.parse(await result.buffer())
+  const body = await fetchPackument(name, requestConfig)
   for (let version of Object.keys(body.versions)) {
     let vv = body.versions[version]
     vv.dist.tarball = vv.dist.tarball.replace(qr.g`${registry}`, `http://127.0.0.1:22000`)
