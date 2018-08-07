@@ -51,6 +51,12 @@
     "type": "git",
     "url": "https://github.com/npm/proxy-registry.git"
   },
+  "files": [
+    "always-json.js",
+    "config.js",
+    "fetch-packument.js",
+    "server.js"
+  ],
   "bugs": "https://github.com/npm/proxy-registry/issues",
   "homepage": "https://npmjs.com/package/proxy-registry"
 }
