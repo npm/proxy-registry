@@ -49,14 +49,14 @@ async function main (opts, ...args) {
     app.on('error', reject)
     srv.on('error', reject)
     if (opts.shell) {
-      process.env['npm_config_registry'] = `http://localhost:${opts.port}`
-      console.log(`Starting subshell configured to talk to: https://localhost:${opts.port}`)
+      process.env['npm_config_registry'] = `http://127.0.0.1:${opts.port}`
+      console.log(`Starting subshell configured to talk to: http://127.0.0.1:${opts.port}`)
       console.log(`To close server, run: exit`)
       spawn(conf.npm.shell, [], {stdio: 'inherit'})
         .on('close', er => er ? reject(er) : resolve())
     } else {
-      console.log(`Listening on: https://localhost:${opts.port}`)
-      console.log(`To use: npm config set registry https://localhost:${opts.port}`)
+      console.log(`Listening on: http://127.0.0.1:${opts.port}`)
+      console.log(`To use: npm config set registry http://127.0.0.1:${opts.port}`)
       console.log(`^C to close server`)
       process.on('SIGINT', resolve)
     }
@@ -92,7 +92,7 @@ async function fetchManifest (ctx, requestConfig) {
   const body = JSON.parse(await result.buffer())
   for (let version of Object.keys(body.versions)) {
     let vv = body.versions[version]
-    vv.dist.tarball = vv.dist.tarball.replace(qr.g`${registry}`, `http://localhost:22000`)
+    vv.dist.tarball = vv.dist.tarball.replace(qr.g`${registry}`, `http://127.0.0.1:22000`)
   }
   ctx.response.body = JSON.stringify(body)
 }
