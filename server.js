@@ -36,9 +36,21 @@ const alwaysJson = require('./always-json.js')
 const fetchPackument = require('./fetch-packument.js')
 const tar = require('tar')
 const semver = require('semver')
-const MarkdownIt = require('markdown-it')
-const md = new MarkdownIt()
 const conf = require('./config.js')
+let marky
+try {
+  marky = require("marky-markdown")
+} catch (_) {
+  const MarkdownIt = require('markdown-it')
+  marky = (_, opts) => {
+    const md = new MarkdownIt({
+      html: true,
+      linkify: true,
+      ...opts
+    })
+    return md.render(_)
+  }
+}
 
 const registry = conf.npm.registry.replace(/[/]$/, '')
 
@@ -133,7 +145,7 @@ async function webPackage (ctx, name, version) {
   if (!version) {
     version = packument['dist-tags'].latest
   }
-  const manifest = packument.versions[version]
+  let manifest = packument.versions[version]
   const tarball = manifest.dist.tarball
   const integrity = manifest.dist.integrity || ssri.fromHex(manifest.dist.shasum, 'sha1').toString()
   let readme = ''
@@ -145,6 +157,9 @@ async function webPackage (ctx, name, version) {
   }
   ctx.response.body = `<html>
 <head>
+   <link rel="stylesheet" href="https://static.npmjs.com/862d62e1eccfac06e291a1603a2ec56c.css"/>
+   <link rel="stylesheet" href="https://static.npmjs.com/cms/flatpages.css"/>
+   <link rel="stylesheet" href="https://static.npmjs.com/6f0fec69a6599ac07cbe906fef441123.css"/>
   <style>
    body { margin: 5em; }
     #readme { float: left; width: 75%; }
@@ -152,7 +167,7 @@ async function webPackage (ctx, name, version) {
   </style>
 </head>
 <body>
-  <div id="readme">${md.render(readme)}</div>
+  <div id="readme">${marky(readme, {package: manifest})}</div>
   <div class="manifest"><pre>${JSON.stringify(manifest, null, 2)}</pre></div>
 </body>
 </html>

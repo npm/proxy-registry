@@ -34,11 +34,14 @@
     "tar": "^4.4.6",
     "yargs": "^12.0.1"
   },
+  "optionalDependencies": {
+    "marky-markdown": "^12.0.0"
+  },
   "devDependencies": {
-    "weallbehave": "*",
-    "weallcontribute": "*",
     "standard": "*",
-    "standard-version": "*"
+    "standard-version": "*",
+    "weallbehave": "*",
+    "weallcontribute": "*"
   },
   "bundleDependencies": [
     "@iarna/cli",
