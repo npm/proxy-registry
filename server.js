@@ -28,7 +28,7 @@ const pacote = require('pacote')
 const fetch = require('make-fetch-happen')
 const qr = require('@perl/qr')
 const http = require('http')
-const cacache = require('cacache/en')
+const cache = require('cacache/en')
 const Koa = require('koa')
 const compress = require('koa-compress')
 const logger = require('koa-logger')
@@ -42,14 +42,6 @@ const conf = require('./config.js')
 const registry = conf.npm.registry.replace(/[/]$/, '')
 
 const cacheDir = conf.npm.cache + '/_cacache'
-const cache = new Proxy({}, {
-  get (target, prop, receiver) {
-    if (target[prop]) return target[prop]
-    const fn = cacache[prop]
-    return target[prop] = function (...args) { return fn.call(this, cacheDir, ...args) }
-  }
-})
-cache.ls.stream = (...args) => cacache.ls.stream(cacheDir, ...args)
 
 async function main (opts, ...args) {
   if (opts.log == null) opts.log = !opts.shell
@@ -121,12 +113,12 @@ async function webNotFound (ctx) {
 }
 
 async function tarballMetadata (tarball) {
-  const tb = await cache.get(`make-fetch-happen:request-cache:${tarball}`)
+  const tb = await cache.get(cacheDir, `make-fetch-happen:request-cache:${tarball}`)
 
   let readmeP
   let pjsonP
   let shrinkP
-  await fun(tb.data).pipe(tar.t()).on('entry', async entry => {
+  await fun(tb).pipe(tar.t()).on('entry', async entry => {
     if (!readmeP && qr.i`^[^/]+/readme(?:$|[.])`.test(entry.path)) readmeP = entry.pipe(fun()).concat()
     if (!pjsonP && qr`^[^/]+/package.json`.test(entry.path)) pjsonP = entry.pipe(fun()).concat()
     if (!shrinkP && qr`^[^/]+/npm-shrinkwrap.json`.test(entry.path)) shrinkP = entry.pipe(fun()).concat()
@@ -136,7 +128,7 @@ async function tarballMetadata (tarball) {
 }
 
 async function webPackage (ctx, name, version) {
-  const ent = await cache.get(`make-fetch-happen:request-cache:${registry}/${name.replace('/', '%2f')}`)
+  const ent = await cache.get(cacheDir, `make-fetch-happen:request-cache:${registry}/${name.replace('/', '%2f')}`)
   const packument = JSON.parse(ent.data)
   if (!version) {
     version = packument['dist-tags'].latest
@@ -183,7 +175,7 @@ const matchCacheTarball = qr`^make-fetch-happen:request-cache:(https?://[^/]+/($
 const matchCachePackument = qr`^make-fetch-happen:request-cache:https?://[^/]+/(${matchName})$`
 async function listModules() {
   const modules = {}
-  Object.values(await cache.ls()).forEach(_ => {
+  Object.values(await cache.ls(cacheDir)).forEach(_ => {
     if (matchCacheTarball.test(_.key)) {
       const [, tarball, name, version] = matchCacheTarball.exec(_.key)
       if (!modules[name]) modules[name] = {name, versions: {}}
