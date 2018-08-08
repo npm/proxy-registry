@@ -113,8 +113,7 @@ async function webNotFound (ctx) {
 }
 
 async function tarballMetadata (tarball) {
-  const tb = await cache.get(cacheDir, `make-fetch-happen:request-cache:${tarball}`)
-
+  const tb = cache.get.stream(cacheDir, `make-fetch-happen:request-cache:${tarball}`)
   let readmeP
   let pjsonP
   let shrinkP
