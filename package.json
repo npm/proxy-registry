@@ -47,18 +47,18 @@
     "@iarna/cli",
     "@perl/qr",
     "@perl/qx",
+    "cacache",
+    "funstream",
     "koa",
     "koa-compress",
     "koa-json-error",
     "koa-logger",
     "make-fetch-happen",
+    "markdown-it",
     "pacote",
-    "yargs",
-    "cacache",
-    "funstream",
-    "ssri",
     "tar",
-    "markdown-it"
+    "ssri",
+    "yargs"
   ],
   "repository": {
     "type": "git",
