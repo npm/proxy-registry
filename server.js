@@ -35,6 +35,7 @@ const logger = require('koa-logger')
 const alwaysJson = require('./always-json.js')
 const fetchPackument = require('./fetch-packument.js')
 const tar = require('tar')
+const semver = require('semver')
 const MarkdownIt = require('markdown-it')
 const md = new MarkdownIt()
 const conf = require('./config.js')
@@ -191,7 +192,7 @@ async function listModules() {
     try {
       const pkg = await tarballMetadata(_.tarball)
       return `<b><a href="/package/${_.name}">${_.name}</a></b> (` +
-        Object.values(_.versions).map(_ => `<a href="/package/${_.name}/${_.version}">${_.version}</a>`).join(', ') +
+        Object.values(_.versions).sort((aa, bb) => -1 * semver.compare(aa.version, bb.version)).map(_ => `<a href="/package/${_.name}/${_.version}">${_.version}</a>`).join(', ') +
         `)${pkg.manifest.description ? ': ' + pkg.manifest.description : ''}`
     } catch (_) {
       console.log(_)
