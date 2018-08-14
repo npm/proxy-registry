@@ -95,7 +95,7 @@ function fetchTarball (ctx, requestConfig) {
 
 async function fetchManifest (ctx, requestConfig) {
   const [, name] = matchManifest.exec(ctx.request.url)
-  const body = await fetchPackument(name, requestConfig)
+  const body = await fetchPackument(name.replace(/%2f/ig, '/'), requestConfig)
   for (let version of Object.keys(body.versions)) {
     let vv = body.versions[version]
     vv.dist.tarball = vv.dist.tarball.replace(qr.g`${registry}`, `http://127.0.0.1:22000`)
