@@ -20,7 +20,7 @@ function fetchPackument (uri, spec, registry, opts) {
   if (mem && !opts.preferOnline && mem.has(uri)) {
     return BB.resolve(mem.get(uri))
   }
-  return fetch(uri, opts.concat({
+  return fetch(uri, Object.assign({
     headers: {
       'pacote-req-type': 'packument',
       'pacote-pkg-id': `registry:${spec}`,

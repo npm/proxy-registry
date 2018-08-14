@@ -29,7 +29,8 @@
     "koa-logger": "^3.2.0",
     "make-fetch-happen": "^4.0.1",
     "markdown-it": "^8.4.2",
-    "pacote": "^9.0.0",
+    "npm-registry-fetch": "^3.2.0",
+    "pacote": "^8.0.0",
     "ssri": "^6.0.0",
     "tar": "^4.4.6",
     "yargs": "^12.0.1"
